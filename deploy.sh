@@ -93,6 +93,15 @@ function createCluster {
         envsubst <asg-autodiscover.yaml | kubectl apply -f -
         kubectl get pods --namespace=kube-system | grep autoscaler
 
+        # Install cert-manager
+        helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.9.1 --set installCRDs=true
+        kubectl get pods -n cert-manager
+
+        # Install nginx-ingress
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm repo update
+        helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace
+
         # Update aws-auth
         kubectl get configmap aws-auth -n kube-system -o yaml >aws-auth.yaml
         echo "Update manually aws-auth.yaml, use as example mapUsers.yaml"
@@ -123,6 +132,12 @@ export VPC_NAME="eksctl-${CLUSTER_NAME}-cluster/VPC"
 # export AWS_AVAILABILITY_ZONE=us-east-1f
 export AWS_AVAILABILITY_ZONE=$(get_az_public_subnet $VPC_NAME $AWS_REGION)
 echo "Make sure you have created a Key pairs, called: k8s-sam-${AWS_REGION}..."
+export KEY_PAIR=k8s-sam-${ENVIRONMENT}
+if [ ! -f ${KEY_PAIR}.pem ]; then
+    aws ec2 create-key-pair --key-name ${KEY_PAIR} --query 'KeyMaterial' --output text > ${KEY_PAIR}.pem
+    chmod 400 ${KEY_PAIR}.pem
+fi
+
 ACTION=${ACTION:-default}
 if [ "$ACTION" == "create_cluster" ]; then
     createCluster

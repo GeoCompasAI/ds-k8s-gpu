@@ -1,8 +1,8 @@
 instances:
-- family: "g4dn.xlarge"
-  instance_type: spot,ondemand
-  spot_price: "0.3"
-  nodegroup_type: g4dn-xlarge
+  - family: "g4dn.xlarge"
+    instance_type: spot,ondemand
+    spot_price: "0.25"
+    nodegroup_type: g4dn-xlarge
 # - family: "g5.xlarge"
 #   instance_type: spot,ondemand
 #   spot_price: "0.8"

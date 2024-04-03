@@ -1,3 +1,4 @@
 *-nodes.yaml
 aws-auth.yaml
 policy.json
+*.pem
