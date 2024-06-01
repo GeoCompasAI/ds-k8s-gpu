@@ -7,19 +7,19 @@ metadata:
     environment: ${ENVIRONMENT}
     cluster: ${CLUSTER_NAME}
 nodeGroups:
-  - name: cpu-worker-ondemand
-    instanceType: m5.xlarge
+  - name: ${GROUP_NAME_PREFIX}-ondemand
+    instanceType: "${FAMILY}"
     availabilityZones: ["${AWS_AVAILABILITY_ZONE}"]
-    desiredCapacity: 0
+    desiredCapacity: ${DESIRED_CAPACITY}
     minSize: 0
-    maxSize: 1
+    maxSize: 10
     volumeSize: 50
     volumeType: gp2
     labels:
-      nodegroup_type: cpu-worker-ondemand
-    ssh:
-      allow: true
-      publicKeyName: ${KEY_PAIR}
+      nodegroup_type: ${NODEGROUP_TYPE}_ondemand
+    # ssh:
+    #   allow: true
+    #   publicKeyName: ${KEY_PAIR}
     iam:
       attachPolicyARNs:
         - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
@@ -30,15 +30,15 @@ nodeGroups:
         autoScaler: true
         cloudWatch: true
     tags:
-      k8s.io/cluster-autoscaler/node-template/label/nodegroup_type: "cpu-worker-ondemand"
-  - name: cpu-worker-spot
+      k8s.io/cluster-autoscaler/node-template/label/nodegroup_type: "${NODEGROUP_TYPE}_ondemand"
+  - name: ${GROUP_NAME_PREFIX}-spot
     desiredCapacity: 0
     minSize: 0
-    maxSize: 1
+    maxSize: 10
+    volumeSize: 20
     instancesDistribution:
-      maxPrice: 0.07
-      # 2xlarge/0.15
-      instanceTypes: ["m4.xlarge", "m5.xlarge", "m5a.xlarge", "m6a.xlarge", "m6i.xlarge", "t2.xlarge", "t3.2xlarge", "t3a.2xlarge"]
+      maxPrice: ${SPOT_PRICE}
+      instanceTypes: ["${FAMILY}"]
       onDemandBaseCapacity: 0
       onDemandPercentageAboveBaseCapacity: 0
       spotAllocationStrategy: capacity-optimized
@@ -46,10 +46,10 @@ nodeGroups:
       lifecycle: Ec2Spot
       aws.amazon.com/spot: "true"
       cpu-count: "0"
-      nodegroup_type: cpu-worker-spot
-    ssh:
-      allow: true
-      publicKeyName: ${KEY_PAIR}
+      nodegroup_type: ${NODEGROUP_TYPE}_spot
+    # ssh:
+    #   allow: true
+    #   publicKeyName: ${KEY_PAIR}
     availabilityZones: ["${AWS_AVAILABILITY_ZONE}"]
     taints:
       - key: spotInstance
@@ -62,7 +62,7 @@ nodeGroups:
       k8s.io/cluster-autoscaler/node-template/taint/spotInstance: "true:PreferNoSchedule"
       k8s.io/cluster-autoscaler/enabled: "true"
       k8s.io/cluster-autoscaler/${CLUSTER_NAME}: "owned"
-      k8s.io/cluster-autoscaler/node-template/label/nodegroup_type: "cpu-worker-spot"
+      k8s.io/cluster-autoscaler/node-template/label/nodegroup_type: "${NODEGROUP_TYPE}_spot"
     iam:
       attachPolicyARNs:
         - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy

@@ -1,0 +1,21 @@
+instances:
+  - family: "t3.nano"
+    spot_price: "0.0023"
+    nodegroup_type: t3_nano
+    desired_capacity: 0
+  - family: "t3.micro"
+    spot_price: "0.0045"
+    nodegroup_type: t3_micro
+    desired_capacity: 1
+# - family: "t3.medium"
+#   spot_price: "0.0187"
+#   nodegroup_type: t3_medium
+#   desired_capacity: 0
+# - family: "t3.large"
+#   spot_price: "0.0522"
+#   nodegroup_type: t3_large
+#   desired_capacity: 0
+# - family: "t3.xlarge"
+#   spot_price: "0.0777"
+#   nodegroup_type: t3_xlarge
+#   desired_capacity: 0
